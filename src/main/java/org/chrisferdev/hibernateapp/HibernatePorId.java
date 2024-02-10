@@ -25,8 +25,12 @@ public class HibernatePorId {
         Long id = s.nextLong();
         EntityManager em = JpaUtil.getEntityManager();
         Cliente cliente = em.find(Cliente.class, id);
-
         System.out.println(cliente);
+
+        Cliente cliente2 = em.find(Cliente.class, id);
+        System.out.println(cliente2);
+
         em.close();
+
     }
 }
