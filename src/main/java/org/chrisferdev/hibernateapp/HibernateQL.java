@@ -7,6 +7,7 @@ import org.chrisferdev.hibernateapp.dominio.ClienteDto;
 import org.chrisferdev.hibernateapp.entity.Cliente;
 import org.chrisferdev.hibernateapp.util.JpaUtil;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class HibernateQL {
@@ -159,6 +160,27 @@ public class HibernateQL {
         Long count = (Long) estadisticas[3];
         Double avg = (Double) estadisticas[4];
         System.out.println("min=" + min + ", max=" + max + ", sum=" + sum + ", count=" + count + ", avg=" + avg);
+
+        System.out.println("======= consulta con nombre mas corto y su largo =======");
+        registros = em.createQuery("SELECT c.nombre, LENGTH(c.nombre) FROM Cliente c WHERE" +
+                        " LENGTH(c.nombre) = (SELECT MIN(LENGTH(c.nombre)) FROM Cliente c)", Object[].class)
+                        .getResultList();
+        registros.forEach(reg ->{
+            String nom = (String) reg[0];
+            Integer largo = (Integer) reg[1];
+            System.out.println("nombre=" + nom + ", largo=" + largo);
+        });
+
+        System.out.println("======= consulta para obtener el ultimo registro =======");
+        Cliente ultimoCliente = em.createQuery("SELECT c FROM Cliente c WHERE c.id = (SELECT MAX(c.id) FROM Cliente c)", Cliente.class)
+                        .getSingleResult();
+        System.out.println(ultimoCliente);
+
+        System.out.println("======= consulta WHERE IN =======");
+        clientes = em.createQuery("SELECT c FROM Cliente c WHERE c.id IN :ids", Cliente.class)
+                .setParameter("ids", Arrays.asList(1L, 2L, 10L, 6L))
+                .getResultList();
+        clientes.forEach(System.out::println);
         em.close();
     }
 }
