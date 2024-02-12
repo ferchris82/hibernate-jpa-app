@@ -52,7 +52,7 @@ public class HibernateQL {
 
         System.out.println("======== consulta por cliente y forma de pago ========");
         registros = em.createQuery("SELECT c, c.formaPago FROM Cliente c", Object[].class)
-                        .getResultList();
+                .getResultList();
         registros.forEach(reg -> {
             Cliente c = (Cliente) reg[0];
             String formaPago = (String) reg[1];
@@ -61,7 +61,7 @@ public class HibernateQL {
 
         System.out.println("===== consulta que puebla y devuelve objeto entity de una clase personalizada");
         clientes = em.createQuery("SELECT NEW Cliente(c.nombre, c.apellido) FROM Cliente c", Cliente.class)
-                        .getResultList();
+                .getResultList();
         clientes.forEach(System.out::println);
 
         System.out.println("===== consulta que puebla y devuelve objeto de una clase personalizada");
@@ -71,17 +71,17 @@ public class HibernateQL {
 
         System.out.println("====== consulta con nombres de clientes =======");
         List<String> nombres = em.createQuery("SELECT c.nombre FROM Cliente c", String.class)
-                        .getResultList();
+                .getResultList();
         nombres.forEach(System.out::println);
 
         System.out.println("====== consulta con nombres unicos de clientes ======");
         nombres = em.createQuery("SELECT DISTINCT(c.nombre) FROM Cliente c", String.class)
-                        .getResultList();
+                .getResultList();
         nombres.forEach(System.out::println);
 
         System.out.println("======= consulta con formas de pago unicas");
         List<String> formasPago = em.createQuery("SELECT DISTINCT(c.formaPago) FROM Cliente c", String.class)
-                        .getResultList();
+                .getResultList();
         formasPago.forEach(System.out::println);
 
         System.out.println("======= consulta con numero de formas de pago unicas");
@@ -89,6 +89,27 @@ public class HibernateQL {
                 .getSingleResult();
         System.out.println(totalFormasPago);
 
+        System.out.println("======= consulta con nombre y apellidos concatenados =======");
+//        nombres = em.createQuery("SELECT CONCAT(c.nombre, ' ', c.apellido) AS nombreCompleto FROM Cliente c", String.class)
+//                        .getResultList();
+
+        nombres = em.createQuery("SELECT c.nombre || ' ' || c.apellido AS nombreCompleto FROM Cliente c", String.class)
+                .getResultList();
+
+        nombres.forEach(System.out::println);
+
+        System.out.println("======= consulta con nombre y apellidos concatenados en Mayuscula=======");
+        nombres = em.createQuery("SELECT UPPER(CONCAT(c.nombre, ' ', c.apellido)) AS nombreCompleto FROM Cliente c", String.class)
+                .getResultList();
+
+        nombres.forEach(System.out::println);
+
+        System.out.println("====== Consulta para buscar por nombre =======");
+        String param = "ina";
+        clientes = em.createQuery("SELECT c FROM Cliente c WHERE c.nombre LIKE :parametro", Cliente.class)
+                .setParameter("parametro", "%" + param + "%")
+                .getResultList();
+        clientes.forEach(System.out::println);
         em.close();
     }
 }
