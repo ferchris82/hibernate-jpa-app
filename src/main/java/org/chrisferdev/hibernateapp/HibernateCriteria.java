@@ -1,10 +1,7 @@
 package org.chrisferdev.hibernateapp;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.ParameterExpression;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import org.chrisferdev.hibernateapp.entity.Cliente;
 import org.chrisferdev.hibernateapp.util.JpaUtil;
 
@@ -64,13 +61,24 @@ public class HibernateCriteria {
         System.out.println("======= filtrar usando predicados mayor que o mayor igual que");
         query = criteria.createQuery(Cliente.class);
         from = query.from(Cliente.class);
-        query.select(from).where(criteria.ge(from.get("id"), 2L));
+        query.select(from).where(criteria.gt(from.get("id"), 2L));
         clientes = em.createQuery(query).getResultList();
         clientes.forEach(System.out::println);
 
         query = criteria.createQuery(Cliente.class);
         from = query.from(Cliente.class);
-        query.select(from).where(criteria.gt(criteria.length(from.get("nombre")), 5L));
+        query.select(from).where(criteria.ge(criteria.length(from.get("nombre")), 5L));
+        clientes = em.createQuery(query).getResultList();
+        clientes.forEach(System.out::println);
+
+        System.out.println("======= consulta con los predicados conjuncion and y disyuncion or ======");
+
+        query = criteria.createQuery(Cliente.class);
+        from = query.from(Cliente.class);
+        Predicate porNombre = criteria.equal(from.get("nombre"), "Andres");
+        Predicate porFormaPago = criteria.equal(from.get("formaPago"), "debito");
+        Predicate p3 = criteria.ge(from.get("id"), 4L);
+        query.select(from).where(criteria.and(p3, criteria.or(porNombre, porFormaPago)));
         clientes = em.createQuery(query).getResultList();
         clientes.forEach(System.out::println);
         em.close();
