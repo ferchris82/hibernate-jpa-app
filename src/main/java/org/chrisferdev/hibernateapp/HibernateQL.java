@@ -2,6 +2,7 @@ package org.chrisferdev.hibernateapp;
 
 import com.mysql.cj.xdevapi.Client;
 import jakarta.persistence.EntityManager;
+import jdk.swing.interop.SwingInterOpUtils;
 import org.chrisferdev.hibernateapp.dominio.ClienteDto;
 import org.chrisferdev.hibernateapp.entity.Cliente;
 import org.chrisferdev.hibernateapp.util.JpaUtil;
@@ -120,6 +121,44 @@ public class HibernateQL {
         System.out.println("======= consulta con orden =======");
         clientes = em.createQuery("SELECT c FROM Cliente c ORDER BY c.nombre ASC, c.apellido ASC", Cliente.class).getResultList();
         clientes.forEach(System.out::println);
+
+        System.out.println("======= consulta con total de registros de la tabla =======");
+        Long total = em.createQuery("SELECT COUNT(c) AS total FROM Cliente c", Long.class).getSingleResult();
+        System.out.println(total);
+
+        System.out.println("======== consulta con valor minimo del id =========");
+        Long minId = em.createQuery("SELECT MIN(c.id) AS minimo FROM Cliente c", Long.class).getSingleResult();
+        System.out.println(minId);
+
+        System.out.println("======== consulta con max / ultimo id =========");
+        Long maxId = em.createQuery("SELECT MAX(c.id) AS maximo FROM Cliente c", Long.class).getSingleResult();
+        System.out.println(maxId);
+
+        System.out.println("======== consulta con nombre y su largo =========");
+        registros = em.createQuery("SELECT c.nombre, LENGTH(c.nombre) FROM Cliente c", Object[].class).getResultList();
+        registros.forEach(reg ->{
+            String nom = (String) reg[0];
+            Integer largo = (Integer) reg[1];
+            System.out.println("nombre=" + nom + ", largo=" + largo);
+        });
+
+        System.out.println("====== consulta con el nombre mas largo =======");
+        Integer maxLargoNombre = em.createQuery("SELECT MAX(length(c.nombre)) FROM Cliente c", Integer.class).getSingleResult();
+        System.out.println(maxLargoNombre);
+
+        System.out.println("====== consulta con el nombre mas corto =======");
+        Integer minLargoNombre = em.createQuery("SELECT MIN(length(c.nombre)) FROM Cliente c", Integer.class).getSingleResult();
+        System.out.println(minLargoNombre);
+
+        System.out.println("======= consultas resumen funciones agregacion COUNT MIN MAX AVG SUM =======");
+        Object[] estadisticas = em.createQuery("SELECT MIN(c.id), MAX(c.id), SUM(c.id), COUNT(c.id), AVG(length(c.nombre)) FROM Cliente c", Object[].class)
+                        .getSingleResult();
+        Long min = (Long) estadisticas[0];
+        Long max = (Long) estadisticas[1];
+        Long sum = (Long) estadisticas[2];
+        Long count = (Long) estadisticas[3];
+        Double avg = (Double) estadisticas[4];
+        System.out.println("min=" + min + ", max=" + max + ", sum=" + sum + ", count=" + count + ", avg=" + avg);
         em.close();
     }
 }
