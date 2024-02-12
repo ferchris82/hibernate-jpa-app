@@ -131,6 +131,42 @@ public class HibernateCriteria {
         queryString.select(criteria.upper(criteria.concat(criteria.concat(from.get("nombre"), " "), from.get("apellido"))));
         nombres = em.createQuery(queryString).getResultList();
         nombres.forEach(System.out::println);
+
+        System.out.println("======= consulta de campos personalizados del entity cliente ========");
+        CriteriaQuery<Object[]> queryObject = criteria.createQuery(Object[].class);
+        from = queryObject.from(Cliente.class);
+        queryObject.multiselect(from.get("id"), from.get("nombre"), from.get("apellido"));
+        List<Object[]> registros = em.createQuery(queryObject).getResultList();
+        registros.forEach(reg -> {
+            Long id = (Long) reg[0];
+            String nombre = (String) reg[1];
+            String apellido = (String) reg[2];
+            System.out.println("id=" + id + ", nombre=" + nombre + ", apellido=" + apellido);
+        });
+
+        System.out.println("======= consulta de campos personalizados del entity cliente con WHERE ========");
+        queryObject = criteria.createQuery(Object[].class);
+        from = queryObject.from(Cliente.class);
+        queryObject.multiselect(from.get("id"), from.get("nombre"), from.get("apellido")).where(criteria.like(from.get("nombre"), "%glor%"));
+        registros = em.createQuery(queryObject).getResultList();
+        registros.forEach(reg -> {
+            Long id = (Long) reg[0];
+            String nombre = (String) reg[1];
+            String apellido = (String) reg[2];
+            System.out.println("id=" + id + ", nombre=" + nombre + ", apellido=" + apellido);
+        });
+
+        System.out.println("======= consulta de campos personalizados del entity cliente con WHERE id========");
+        queryObject = criteria.createQuery(Object[].class);
+        from = queryObject.from(Cliente.class);
+        queryObject.multiselect(from.get("id"), from.get("nombre"), from.get("apellido")).where(criteria.equal(from.get("id"), 2L));
+        Object[] registro = em.createQuery(queryObject).getSingleResult();
+
+        Long id = (Long) registro[0];
+        String nombre = (String) registro[1];
+        String apellido = (String) registro[2];
+        System.out.println("id=" + id + ", nombre=" + nombre + ", apellido=" + apellido);
+
         em.close();
     }
 }
