@@ -106,7 +106,7 @@ public class HibernateQL {
 
         System.out.println("====== Consulta para buscar por nombre =======");
         String param = "ina";
-        clientes = em.createQuery("SELECT c FROM Cliente c WHERE c.nombre LIKE :parametro", Cliente.class)
+        clientes = em.createQuery("SELECT c FROM Cliente c WHERE UPPER(c.nombre) LIKE UPPER(:parametro)", Cliente.class)
                 .setParameter("parametro", "%" + param + "%")
                 .getResultList();
         clientes.forEach(System.out::println);
