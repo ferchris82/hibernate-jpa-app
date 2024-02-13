@@ -72,11 +72,13 @@ public class Cliente {
 
     @Override
     public String toString() {
+        LocalDateTime creado = this.audit != null? audit.getCreadoEn():null;
+        LocalDateTime editado = this.audit != null? audit.getEditadoEn():null;
         return "id=" + id +
                 ", nombre='" + nombre + '\'' +
                 ", apellido'" + apellido + '\'' +
                 ", formaPago='" + formaPago+ '\'' +
-                ", creadoEn='" + audit.getCreadoEn() + '\'' +
-                ", editadoEn='" + audit.getEditadoEn() +'\'';
+                ", creadoEn='" + creado + '\'' +
+                ", editadoEn='" + editado +'\'';
     }
 }
